@@ -12,6 +12,7 @@
 
 # Package Files #
 *.jar
+!gradle-wrapper.jar
 *.war
 *.nar
 *.ear
@@ -30,3 +31,9 @@ build
 
 # Ignore jEnv files
 .java-version
+
+# Ignore IDEA files
+*.iml
+*.iws
+*.ipr
+*.idea
