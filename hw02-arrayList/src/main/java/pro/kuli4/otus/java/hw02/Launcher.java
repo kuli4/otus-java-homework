@@ -35,7 +35,7 @@ public class Launcher {
         str2.add("Join");
         System.out.println("Added element to str2, get at index, must be \"Join\"" + str2.get(0));
         System.out.println("Print all elements of str1 by enhanced loop:");
-        for(String str: str1) {
+        for (String str : str1) {
             System.out.println("\t" + str);
         }
         Collections.addAll(str2, "Bybyby", "Lous", "Goooo", "Helen", "Joan", "Petr", "Sergei", "Ivan", "Leo", "Geo", "She", "Gram", "Liam", "William", "Snack", "Can", "Box", "Barker", "Jule", "Lost");
@@ -51,8 +51,8 @@ public class Launcher {
         List<Integer> integers1 = new DIYArrayList<>();
         List<Integer> integers2 = new DIYArrayList<>();
         int count = 0;
-        while(count++ < 100) {
-            integers1.add((int) (Math.random()*100));
+        while (count++ < 100) {
+            integers1.add((int) (Math.random() * 100));
         }
         while (count-- > 0) {
             integers2.add(count);
@@ -66,7 +66,7 @@ public class Launcher {
         System.out.println("integers2 after copping integers1: " + integers2);
         Collections.addAll(integers2, 23, 3, 53, 53, 36, 19383, 383474747, 35);
         System.out.println("integers2 after adding group of ints: " + integers2);
-        Collections.sort(integers2 , (a,b) -> a<b?-1:a==b?0:1);
+        Collections.sort(integers2, (a, b) -> a < b ? -1 : a == b ? 0 : 1);
         System.out.println("integers2 after sorting: " + integers2);
     }
 }

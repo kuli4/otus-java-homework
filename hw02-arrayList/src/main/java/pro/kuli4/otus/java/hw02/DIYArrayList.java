@@ -1,12 +1,13 @@
 package pro.kuli4.otus.java.hw02;
 
 import java.util.*;
+
 import pro.kuli4.otus.java.hw02.exceptions.*;
 
 public class DIYArrayList<T> implements List<T> {
 
     private Object[] arr;
-    private int capacity = 10;
+    private int capacity = 8;
     private int appendCurrentPosition = 0;
 
     @SafeVarargs
@@ -35,8 +36,8 @@ public class DIYArrayList<T> implements List<T> {
             cce.printStackTrace();
             return false;
         }
-        for(Object element: this.arr) {
-            if(((T) element).equals(item)) return true;
+        for (Object element : this.arr) {
+            if (((T) element).equals(item)) return true;
         }
         return false;
     }
@@ -58,8 +59,8 @@ public class DIYArrayList<T> implements List<T> {
 
     @Override
     public boolean add(T element) {
-        if(this.appendCurrentPosition >= this.capacity) {
-            if(!this.extendCapacity()) {
+        if (this.appendCurrentPosition >= this.capacity) {
+            if (!this.extendCapacity()) {
                 throw new TooManyElementsException();
             }
         }
@@ -79,7 +80,7 @@ public class DIYArrayList<T> implements List<T> {
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        for(T item: c) {
+        for (T item : c) {
             this.add(item);
         }
         return true;
@@ -102,7 +103,7 @@ public class DIYArrayList<T> implements List<T> {
 
     @Override
     public void clear() {
-        this.capacity = 10;
+        this.capacity = 8;
         this.appendCurrentPosition = 0;
         this.arr = new Object[this.capacity];
     }
@@ -110,7 +111,7 @@ public class DIYArrayList<T> implements List<T> {
     @SuppressWarnings("unchecked")
     @Override
     public T get(int index) {
-        if(index < this.appendCurrentPosition && index >= 0) {
+        if (index < this.appendCurrentPosition && index >= 0) {
             return (T) this.arr[index];
         } else {
             throw new IndexOutOfBoundsException();
@@ -120,7 +121,7 @@ public class DIYArrayList<T> implements List<T> {
     @SuppressWarnings("unchecked")
     @Override
     public T set(int index, T element) {
-        if(index < this.appendCurrentPosition && index >= 0) {
+        if (index < this.appendCurrentPosition && index >= 0) {
             Object temp = this.arr[index];
             this.arr[index] = element;
             return (T) temp;
@@ -141,8 +142,8 @@ public class DIYArrayList<T> implements List<T> {
 
     @Override
     public int indexOf(Object o) {
-        for(int i = 0; i < this.appendCurrentPosition; i++) {
-            if(Objects.equals(o, this.arr[i])) return i;
+        for (int i = 0; i < this.appendCurrentPosition; i++) {
+            if (Objects.equals(o, this.arr[i])) return i;
         }
         return -1;
     }
@@ -153,7 +154,7 @@ public class DIYArrayList<T> implements List<T> {
     }
 
     @Override
-    public ListIterator<T> listIterator() { //#TODO
+    public ListIterator<T> listIterator() {
         return new DIYArrayListIterator();
     }
 
@@ -170,22 +171,25 @@ public class DIYArrayList<T> implements List<T> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
-        for(T element: this) {
+        for (T element : this) {
             sb.append(element).append(", ");
         }
-        return sb.delete(sb.length()-2, sb.length()).append("]").toString();
+        return sb.delete(sb.length() - 2, sb.length()).append("]").toString();
     }
 
     private boolean extendCapacity() {
-        if(Integer.MAX_VALUE-this.capacity <= 10) {
+        if (Integer.MAX_VALUE == this.capacity) {
             return false;
+        } else if (this.capacity > Integer.MAX_VALUE / 2) {
+            this.capacity = Integer.MAX_VALUE;
+        } else {
+            this.capacity *= 2;
         }
-        this.capacity+=10;
         this.arr = Arrays.copyOf(this.arr, capacity);
         return true;
     }
 
-    private class DIYArrayIterator implements Iterator<T>{
+    private class DIYArrayIterator implements Iterator<T> {
         private int cursor;
 
         protected DIYArrayIterator() {
@@ -235,11 +239,11 @@ public class DIYArrayList<T> implements List<T> {
 
         @Override
         public boolean hasPrevious() {
-            return !(this.cursor-1 < 0);
+            return !(this.cursor - 1 < 0);
         }
 
         @Override
-        public T previous() { //#TODO
+        public T previous() {
             if (hasPrevious()) {
                 this.innerState = cursor - 1;
                 return get(--cursor);
@@ -250,8 +254,8 @@ public class DIYArrayList<T> implements List<T> {
 
         @Override
         public int nextIndex() {
-            if(this.hasNext()) {
-                return this.cursor+1;
+            if (this.hasNext()) {
+                return this.cursor + 1;
             } else {
                 return size();
             }
@@ -259,8 +263,8 @@ public class DIYArrayList<T> implements List<T> {
 
         @Override
         public int previousIndex() {
-            if(this.hasPrevious()) {
-                return this.cursor-1;
+            if (this.hasPrevious()) {
+                return this.cursor - 1;
             } else {
                 return -1;
             }
