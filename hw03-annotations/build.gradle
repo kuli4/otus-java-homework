@@ -1,0 +1,22 @@
+plugins {
+    id 'application'
+}
+
+version '0.0.1'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_14
+    targetCompatibility = JavaVersion.VERSION_14
+}
+
+jar {
+    manifest {
+        attributes 'Main-class': 'pro.kuli4.otus.java.hw03.example.DemoTest'
+    }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
+
