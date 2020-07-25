@@ -37,3 +37,6 @@ build
 *.iws
 *.ipr
 *.idea
+
+# MacOS file
+.DS_Store
