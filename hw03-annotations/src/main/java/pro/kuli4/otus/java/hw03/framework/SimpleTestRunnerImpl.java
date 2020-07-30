@@ -10,52 +10,45 @@ import static pro.kuli4.otus.java.hw03.framework.ReflectionHelper.*;
 
 public class SimpleTestRunnerImpl implements TestRunner {
 
-    private int countOfTest, countOfFailedTest, countOfSuccessTest;
-    private Method[] beforeMethods, testMethods, afterMethods;
-
     @Override
     public <T> void run(Class<T> clazz) {
-        if (clazz.isArray()) {
-            System.out.println("The Test Framework does not work with arrays!");
-            return;
-        }
-        if (clazz.isPrimitive()) {
-            System.out.println("The Test Framework does not work with primitives!");
-            return;
-        }
 
-        beforeMethods = Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.isAnnotationPresent(Before.class)).toArray(Method[]::new);
-        testMethods = Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.isAnnotationPresent(Test.class)).toArray(Method[]::new);
-        afterMethods = Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.isAnnotationPresent(After.class)).toArray(Method[]::new);
+        Method[] beforeMethods = Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.isAnnotationPresent(Before.class)).toArray(Method[]::new);
+        Method[] testMethods = Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.isAnnotationPresent(Test.class)).toArray(Method[]::new);
+        Method[] afterMethods = Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.isAnnotationPresent(After.class)).toArray(Method[]::new);
 
-        countOfTest = testMethods.length;
+        int countOfTest = testMethods.length;
+        int countOfFailedTest = 0;
+        int countOfSuccessTest = 0;
 
         if (countOfTest == 0) {
             System.out.println("Don't found test cases for " + clazz.getCanonicalName());
             return;
         }
 
-        T object;
-
         for (Method testMethod : testMethods) {
 
-            object = instantiate(clazz);
-
-            for (Method beforeMethod : beforeMethods) {
-                callMethod(object, beforeMethod.getName());
-            }
+            T object = instantiate(clazz);
 
             try {
-                callMethod(object, testMethod.getName());
-                countOfSuccessTest++;
-            } catch (Exception e) {
-                countOfFailedTest++;
+                for (Method beforeMethod : beforeMethods) {
+                    callMethod(object, beforeMethod);
+                }
+                try {
+                    callMethod(object, testMethod);
+                    countOfSuccessTest++;
+                } catch (RuntimeException e) {
+                    countOfFailedTest++;
+                }
+            } finally {
+                for (Method afterMethod : afterMethods) {
+                    try {
+                        callMethod(object, afterMethod);
+                    } catch (RuntimeException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-
-            for (Method afterMethod : afterMethods) {
-                callMethod(object, afterMethod.getName());
-            }
-
         }
 
         System.out.println("=============================");

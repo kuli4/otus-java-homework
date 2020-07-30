@@ -1,5 +1,6 @@
 package pro.kuli4.otus.java.hw03.framework;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 public class ReflectionHelper {
@@ -26,10 +27,8 @@ public class ReflectionHelper {
         }
     }
 
-    public static Object callMethod(Object object, String name, Object... args) {
+    public static Object callMethod(Object object, Method method, Object... args) {
         try {
-            var method = object.getClass().getDeclaredMethod(name, toClasses(args));
-            method.setAccessible(true);
             return method.invoke(object, args);
         } catch (ReflectiveOperationException e) { // Changed Exception to ReflectiveOperationException
             throw new RuntimeException(e);
