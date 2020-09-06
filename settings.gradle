@@ -6,4 +6,4 @@ include 'hw02-arrayList'
 include 'hw03-annotations'
 include 'hw06-atm'
 include 'hw05-aop'
-
+include 'hw07-patterns'
