@@ -1,0 +1,25 @@
+plugins {
+    id 'application'
+}
+
+group 'pro.kuli4.otus.java'
+version '0.0.1'
+
+dependencies {
+    implementation 'org.ow2.asm:asm-commons'
+    implementation 'org.ow2.asm:asm-util'
+}
+
+jar {
+    manifest {
+        attributes 'Main-class': 'pro.kuli4.otus.java.hw05.Launcher'
+        attributes 'Premain-Class': 'pro.kuli4.otus.java.hw05.Agent'
+    }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
+
+
