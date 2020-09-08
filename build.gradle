@@ -23,6 +23,8 @@ subprojects {
             dependency("com.google.guava:guava:${Versions.guava}")
             dependency("org.ow2.asm:asm-commons:${Versions.asm}")
             dependency("org.ow2.asm:asm-util:${Versions.asmUtil}")
+            dependency("com.google.code.gson:gson:${Versions.gson}")
+            dependency("org.glassfish:javax.json:${Versions.glassfishJson}")
         }
     }
 }
