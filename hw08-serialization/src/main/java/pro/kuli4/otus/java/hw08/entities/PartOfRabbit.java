@@ -1,4 +1,4 @@
-package pro.kuli4.otus.java.hw08;
+package pro.kuli4.otus.java.hw08.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

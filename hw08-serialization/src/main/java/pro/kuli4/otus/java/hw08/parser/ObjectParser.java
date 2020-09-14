@@ -4,6 +4,7 @@ import pro.kuli4.otus.java.hw08.visitor.ArrayVisitor;
 import pro.kuli4.otus.java.hw08.visitor.CollectionVisitor;
 import pro.kuli4.otus.java.hw08.visitor.ObjectVisitor;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -34,24 +35,16 @@ public class ObjectParser implements Parser {
 
                 //Parse primitive
                 if (field.getType().isPrimitive()) {
-                    switch (field.getType().getName()) {
-                        case "int":
-                        case "byte":
-                        case "short":
-                            ov.visitInt(field.getName(), field.getInt(o));
-                            break;
-                        case "long":
-                            ov.visitLong(field.getName(), field.getLong(o));
-                            break;
-                        case "char":
-                            ov.visitChar(field.getName(), field.getChar(o));
-                            break;
-                        case "boolean":
-                            ov.visitBoolean(field.getName(), field.getBoolean(o));
-                            break;
-                        case "float":
-                        case "double":
-                            ov.visitDouble(field.getName(), field.getDouble(o));
+                    if (field.getType().equals(int.class) || field.getType().equals(byte.class) || field.getType().equals(short.class)) {
+                        ov.visitInt(field.getName(), field.getInt(o));
+                    } else if (field.getType().equals(long.class)) {
+                        ov.visitLong(field.getName(), field.getLong(o));
+                    } else if (field.getType().equals(char.class)) {
+                        ov.visitChar(field.getName(), field.getChar(o));
+                    } else if (field.getType().equals(boolean.class)) {
+                        ov.visitBoolean(field.getName(), field.getBoolean(o));
+                    } else if (field.getType().equals(float.class) || field.getType().equals(double.class)) {
+                        ov.visitDouble(field.getName(), field.getDouble(o));
                     }
                     continue;
                 }
@@ -83,6 +76,38 @@ public class ObjectParser implements Parser {
                     ov.visitString(field.getName(), (String) field.get(o));
                     continue;
                 }
+
+
+                // Parse boxed int, short, byte
+                if (field.getType().equals(Integer.class) || field.getType().equals(Short.class) || field.getType().equals(Byte.class)) {
+                    ov.visitInt(field.getName(), (int) field.get(o));
+                    continue;
+                }
+
+                // Parse boxed long
+                if (field.getType().equals(Long.class)) {
+                    ov.visitLong(field.getName(), (long) field.get(o));
+                    continue;
+                }
+
+                // Parse boxed char
+                if (field.getType().equals(Character.class)) {
+                    ov.visitChar(field.getName(), (char) field.get(o));
+                    continue;
+                }
+
+                // Parse boxed boolean
+                if (field.getType().equals(Boolean.class)) {
+                    ov.visitBoolean(field.getName(), (boolean) field.get(o));
+                    continue;
+                }
+
+                //Parse boxed float, double
+                if (field.getType().equals(Float.class) || field.getType().equals(Double.class)) {
+                    ov.visitDouble(field.getName(), (double) field.get(o));
+                    continue;
+                }
+
 
                 // Parse other Object
                 this.parse(field.get(o), ov.visitObject(field.getName(), field.get(o)));

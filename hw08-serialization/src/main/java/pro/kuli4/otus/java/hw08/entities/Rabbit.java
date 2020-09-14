@@ -1,4 +1,4 @@
-package pro.kuli4.otus.java.hw08;
+package pro.kuli4.otus.java.hw08.entities;
 
 import java.util.List;
 

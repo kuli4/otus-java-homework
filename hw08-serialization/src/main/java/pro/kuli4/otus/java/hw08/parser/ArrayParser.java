@@ -34,24 +34,16 @@ public class ArrayParser implements Parser {
 
             //Parse primitive
             if (elementType.isPrimitive()) {
-                switch (elementType.getName()) {
-                    case "int":
-                    case "byte":
-                    case "short":
-                        av.visitInt(Array.getInt(o, i));
-                        break;
-                    case "long":
-                        av.visitLong(Array.getLong(o, i));
-                        break;
-                    case "char":
-                        av.visitChar(Array.getChar(o, i));
-                        break;
-                    case "boolean":
-                        av.visitBoolean(Array.getBoolean(o, i));
-                        break;
-                    case "float":
-                    case "double":
-                        av.visitDouble(Array.getDouble(o, i));
+                if (elementType.equals(int.class) || elementType.equals(byte.class) || elementType.equals(short.class)) {
+                    av.visitInt(Array.getInt(o, i));
+                } else if (elementType.equals(long.class)) {
+                    av.visitLong(Array.getLong(o, i));
+                } else if (elementType.equals(char.class)) {
+                    av.visitChar(Array.getChar(o, i));
+                } else if (elementType.equals(boolean.class)) {
+                    av.visitBoolean(Array.getBoolean(o, i));
+                } else if (elementType.equals(float.class) || elementType.equals(double.class)) {
+                    av.visitDouble(Array.getDouble(o, i));
                 }
                 continue;
             }
@@ -73,6 +65,36 @@ public class ArrayParser implements Parser {
             // Parse String
             if (elementType.equals(String.class)) {
                 av.visitString((String) Array.get(o, i));
+                continue;
+            }
+
+            // Parse boxed int, short, byte
+            if (elementType.equals(Integer.class) || elementType.equals(Short.class) || elementType.equals(Byte.class)) {
+                av.visitInt((int) Array.get(o,i));
+                continue;
+            }
+
+            // Parse boxed long
+            if (elementType.equals(Long.class)) {
+                av.visitLong((long) Array.get(o,i));
+                continue;
+            }
+
+            // Parse boxed char
+            if (elementType.equals(Character.class)) {
+                av.visitChar((char) Array.get(o,i));
+                continue;
+            }
+
+            // Parse boxed boolean
+            if (elementType.equals(Boolean.class)) {
+                av.visitBoolean((boolean) Array.get(o,i));
+                continue;
+            }
+
+            //Parse boxed float, double
+            if (elementType.equals(Float.class) || elementType.equals(Double.class)) {
+                av.visitDouble((double) Array.get(o,i));
                 continue;
             }
 

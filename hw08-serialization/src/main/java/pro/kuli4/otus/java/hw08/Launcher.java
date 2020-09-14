@@ -1,8 +1,13 @@
 package pro.kuli4.otus.java.hw08;
 
+import pro.kuli4.otus.java.hw08.entities.PartOfRabbit;
+import pro.kuli4.otus.java.hw08.entities.Rabbit;
+
 import com.google.gson.Gson;
+import pro.kuli4.otus.java.hw08.transform2json.MyGson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /*
@@ -40,6 +45,50 @@ public class Launcher {
 
         checkSerializeObject(rabbit);
         checkSerializeObject(null);
+
+        Gson gson = new Gson();
+        MyGson myGson = new MyGson();
+
+        System.out.println(myGson.toJson((byte)1));
+        System.out.println(gson.toJson((byte)1));
+
+        System.out.println(myGson.toJson((short)2f));
+        System.out.println(gson.toJson((short)2f));
+
+        System.out.println(myGson.toJson(3));
+        System.out.println(gson.toJson(3));
+
+        System.out.println(myGson.toJson(4L));
+        System.out.println(gson.toJson(4L));
+
+        System.out.println(myGson.toJson(5f));
+        System.out.println(gson.toJson(5f));
+
+        System.out.println(myGson.toJson(6d));
+        System.out.println(gson.toJson(6d));
+
+        System.out.println(myGson.toJson("aaa"));
+        System.out.println(gson.toJson("aaa"));
+
+
+        System.out.println(myGson.toJson('b'));
+        System.out.println(gson.toJson('b'));
+
+        System.out.println(myGson.toJson(new int[] {7, 8, 9}));
+        System.out.println(gson.toJson(new int[] {7, 8, 9}));
+
+        System.out.println(myGson.toJson(List.of(10, 11 ,12)));
+        System.out.println(gson.toJson(List.of(10, 11 ,12)));
+
+        System.out.println(myGson.toJson(Collections.singletonList(13)));
+        System.out.println(gson.toJson(Collections.singletonList(13)));
+
+        boolean b = true;
+        System.out.println(myGson.toJson(b));
+        System.out.println(gson.toJson(b));
+
+        System.out.println(myGson.toJson(Integer.valueOf(10)));
+        System.out.println(gson.toJson(Integer.valueOf(10)));
     }
 
     public static void checkSerializeObject(Rabbit rabbit) {
