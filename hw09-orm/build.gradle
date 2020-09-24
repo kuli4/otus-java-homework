@@ -1,0 +1,32 @@
+plugins {
+    id 'application'
+}
+
+version '0.0.1'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_14
+    targetCompatibility = JavaVersion.VERSION_14
+}
+
+dependencies {
+    dependencies {
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+
+        implementation 'com.h2database:h2'
+        implementation 'ch.qos.logback:logback-classic'
+        implementation 'org.flywaydb:flyway-core'
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-class': 'pro.kuli4.otus.java.hw09.HomeWork'
+    }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
