@@ -24,33 +24,41 @@ public class UserDaoHibernate implements UserDao {
         try(Session session = sessionFactory.openSession()) {
             return Optional.ofNullable(session.find(User.class, id));
         } catch (Exception e) {
-            throw new UserDaoException(e);
+            throw new UserDaoException("Cannot findById, id = " + id, e);
         }
     }
 
     @Override
     public long insertUser(User user) {
-        throw new UnsupportedOperationException();
+        try (Session session = sessionFactory.openSession()) {
+            Transaction tx = session.beginTransaction();
+            session.save(user);
+            tx.commit();
+            return user.getId();
+        } catch (Exception e) {
+            throw new UserDaoException("Cannot insertUser, user = " + user,e);
+        }
     }
 
     @Override
     public void updateUser(User user) {
-        throw new UnsupportedOperationException();
+        try (Session session = sessionFactory.openSession()) {
+            Transaction tx = session.beginTransaction();
+            session.merge(user);
+            tx.commit();
+        } catch (Exception e) {
+            throw new UserDaoException("Cannot updateUser, user = " + user,e);
+        }
     }
 
     @Override
     public void insertOrUpdate(User user) {
         try (Session session = sessionFactory.openSession()) {
-            Transaction tx = session.getTransaction();
-            tx.begin();
-            if (user.getId() != null) {
-                session.merge(user);
-            } else {
-                session.save(user);
-            }
+            Transaction tx = session.beginTransaction();
+            session.saveOrUpdate(user);
             tx.commit();
         } catch (Exception e) {
-            throw new UserDaoException(e);
+            throw new UserDaoException("Cannot insertOrUpdate, user = " + user,e);
         }
     }
 }

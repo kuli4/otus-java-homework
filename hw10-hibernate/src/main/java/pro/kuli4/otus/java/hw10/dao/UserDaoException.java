@@ -1,7 +1,7 @@
 package pro.kuli4.otus.java.hw10.dao;
 
 public class UserDaoException extends RuntimeException {
-    public UserDaoException(Exception ex) {
-        super(ex);
+    public UserDaoException(String message, Exception ex) {
+        super(message, ex);
     }
 }

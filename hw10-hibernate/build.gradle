@@ -12,6 +12,10 @@ dependencies {
 
     implementation("com.h2database:h2")
     implementation("org.hibernate:hibernate-core")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testImplementation("org.assertj:assertj-core")
 }
 
 

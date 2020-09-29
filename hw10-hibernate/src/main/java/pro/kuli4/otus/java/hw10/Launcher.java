@@ -49,7 +49,6 @@ public class Launcher {
                 .build();
 
         sessionFactory = metadata.getSessionFactoryBuilder().build();
-
         UserDao userDao = new UserDaoHibernate(sessionFactory);
         dbServiceUser = new DbServiceUserImpl(userDao);
     }
