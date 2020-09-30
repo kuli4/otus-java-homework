@@ -11,4 +11,6 @@ public interface Cache<K, V> {
     void addListener(CacheListener<K, V> listener);
 
     void removeListener(CacheListener<K, V> listener);
+
+    int getSize();
 }
