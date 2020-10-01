@@ -7,7 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode
 public class PrintActionCacheListener<V,K> implements CacheListener<V,K> {
 
-    private final int id = 1;
+    private static int counter = 1;
+
+    private final int id = counter++;
 
     @Override
     public void notify(V key, K value, CacheAction action) {

@@ -33,7 +33,10 @@ public class Launcher {
     public static void main(String[] args) {
         Cache<String,User> cache = new MyCache<>();
         CacheListener<String, User> cacheListener = new PrintActionCacheListener<>();
+        CacheListener<String, User> cacheListener2 = new PrintActionCacheListener<>();
         cache.addListener(cacheListener);
+        cache.addListener(cacheListener2);
+        cache.removeListener(cacheListener2);
 
         Configuration cfg = new Configuration().configure(HIBERNATE_CFG_FILE);
 
