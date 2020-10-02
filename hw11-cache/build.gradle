@@ -1,0 +1,33 @@
+plugins {
+    id 'application'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_14
+    targetCompatibility = JavaVersion.VERSION_14
+}
+
+version '0.0.1'
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    implementation 'com.h2database:h2'
+    implementation 'ch.qos.logback:logback-classic'
+
+    implementation("org.hibernate:hibernate-core")
+
+    implementation project(':hw10-hibernate')
+}
+
+jar {
+    manifest {
+        attributes 'Main-class': 'pro.kuli4.otus.java.hw11.Launcher'
+    }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
