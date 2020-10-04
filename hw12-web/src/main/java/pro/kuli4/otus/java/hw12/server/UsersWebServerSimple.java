@@ -32,7 +32,7 @@ public class UsersWebServerSimple implements UsersWebServer {
     private final TemplateProcessor templateProcessor;
     private final Gson gson;
     private final Server server;
-    private final String[] restrictAreaPaths = new String[] { "/admin/*", "/private/*"}; //"/api/*",
+    private final String[] restrictAreaPaths = new String[]{"/api/*", "/private/*"};
 
     public UsersWebServerSimple(int port,
                                 UserAuthService authService,
@@ -87,9 +87,9 @@ public class UsersWebServerSimple implements UsersWebServer {
         servletContextHandler.setContextPath("/");
 
         ServletHolder resourceServletHolder = new ServletHolder(new DefaultServlet());
-        resourceServletHolder.setInitParameter("dirAllowed","false");
+        resourceServletHolder.setInitParameter("dirAllowed", "false");
         resourceServletHolder.setInitParameter("welcomeServlets", "true");
-        servletContextHandler.addServlet(resourceServletHolder,"/");
+        servletContextHandler.addServlet(resourceServletHolder, "/");
 
         servletContextHandler.addServlet(new ServletHolder(new IndexServlet(templateProcessor)), "/index.html");
         servletContextHandler.addServlet(new ServletHolder(new UsersApiServlet(userJsonDto, userDao, gson)), "/api/user/");
