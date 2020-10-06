@@ -5,4 +5,5 @@ public interface Versions {
     String asmUtil = "8.0.1";
     String gson = "2.8.5";
     String glassfishJson = "1.1.4";
+    String reflections = "0.9.12";
 }
