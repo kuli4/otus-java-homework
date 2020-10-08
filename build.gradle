@@ -26,6 +26,7 @@ subprojects {
             dependency("org.ow2.asm:asm-util:${Versions.asmUtil}")
             dependency("com.google.code.gson:gson:${Versions.gson}")
             dependency("org.glassfish:javax.json:${Versions.glassfishJson}")
+            dependency("org.reflections:reflections:${Versions.reflections}")
             dependency("org.eclipse.jetty:jetty-server:${Versions.jetty}")
             dependency("org.eclipse.jetty:jetty-webapp:${Versions.jetty}")
             dependency("org.freemarker:freemarker:${Versions.freemarker}")
