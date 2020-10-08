@@ -8,6 +8,7 @@ import ru.otus.appcontainer.api.AppComponentsContainer;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
 
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 @Slf4j
@@ -23,16 +24,20 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     }
 
     public AppComponentsContainerImpl(Class<?>... configClasses) {
-        Arrays.stream(configClasses)
-                .filter(clazz -> clazz.isAnnotationPresent(AppComponentsContainerConfig.class))
-                .sorted(Comparator.comparingInt(clazz -> clazz.getAnnotation(AppComponentsContainerConfig.class).order()))
-                .forEachOrdered(this::processConfig);
+        processConfigArray(Arrays.stream(configClasses)
+                .filter(clazz -> clazz.isAnnotationPresent(AppComponentsContainerConfig.class)).toArray()
+        );
     }
 
     public AppComponentsContainerImpl(String packageName) {
         Reflections reflections = new Reflections(packageName, new TypeAnnotationsScanner());
-        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(AppComponentsContainerConfig.class, true);
-        annotated.stream()
+        processConfigArray(reflections.getTypesAnnotatedWith(AppComponentsContainerConfig.class, true).toArray());
+
+    }
+
+    private void processConfigArray(Object[] classes) {
+        Arrays.stream(classes)
+                .map(clazz -> (Class<?>) clazz)
                 .sorted(Comparator.comparingInt(clazz -> clazz.getAnnotation(AppComponentsContainerConfig.class).order()))
                 .forEachOrdered(this::processConfig);
     }
@@ -44,22 +49,19 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
             Arrays.stream(configClass.getDeclaredMethods())
                     .filter(method -> method.isAnnotationPresent(AppComponent.class))
                     .sorted(Comparator.comparingInt(method -> method.getAnnotation(AppComponent.class).order()))
-                    .forEachOrdered(method -> {
-                        List<Class<?>> argClasses = List.of(method.getParameterTypes());
-                        Object[] args = argClasses.stream().map(argClass -> appComponents.stream()
-                                .filter(component -> argClass.isAssignableFrom(component.getClass()))
-                                .findFirst().orElseThrow()
-                        ).toArray();
-                        log.debug("args for {} method: {}", method.getName(), Arrays.asList(args));
-                        try {
-                            Object newComponent = method.invoke(configObj, args);
-                            appComponents.add(newComponent);
-                            appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), newComponent);
-                        } catch (Exception e) {
-                            throw new AppComponentsContainerException(e);
-                        }
+                    .forEachOrdered(method -> this.processComponent(configObj, method));
+        } catch (Exception e) {
+            throw new AppComponentsContainerException(e);
+        }
+    }
 
-                    });
+    private void processComponent(Object obj, Method method) {
+        Object[] args = Arrays.stream(method.getParameterTypes()).map(this::getAppComponent).toArray();
+        log.debug("args for {} method: {}", method.getName(), Arrays.asList(args));
+        try {
+            Object newComponent = method.invoke(obj, args);
+            appComponents.add(newComponent);
+            appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), newComponent);
         } catch (Exception e) {
             throw new AppComponentsContainerException(e);
         }
@@ -76,7 +78,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         return (C) appComponents.stream()
                 .filter(component -> componentClass.isAssignableFrom(component.getClass()))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new AppComponentsContainerException(String.format("There isn't %s component in context!", componentClass.getName())));
     }
 
     @Override
