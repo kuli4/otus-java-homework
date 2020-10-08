@@ -10,12 +10,12 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import pro.kuli4.otus.java.hw12.dao.UserDao;
-import pro.kuli4.otus.java.hw12.dto.UserJsonDto;
 import pro.kuli4.otus.java.hw12.helpers.FileSystemHelper;
 import pro.kuli4.otus.java.hw12.server.servlets.AuthorizationFilter;
 import pro.kuli4.otus.java.hw12.server.servlets.IndexServlet;
 import pro.kuli4.otus.java.hw12.server.servlets.LoginServlet;
 import pro.kuli4.otus.java.hw12.server.servlets.UsersApiServlet;
+import pro.kuli4.otus.java.hw12.service.PassEncoder;
 import pro.kuli4.otus.java.hw12.service.TemplateProcessor;
 import pro.kuli4.otus.java.hw12.service.UserAuthService;
 
@@ -27,24 +27,24 @@ public class UsersWebServerSimple implements UsersWebServer {
     private static final String LOGIN_URL = "/login/";
 
     private final UserDao userDao;
-    private final UserJsonDto userJsonDto;
     private final UserAuthService authService;
     private final TemplateProcessor templateProcessor;
     private final Gson gson;
     private final Server server;
+    private final PassEncoder passEncoder;
     private final String[] restrictAreaPaths = new String[]{"/api/*", "/private/*"};
 
     public UsersWebServerSimple(int port,
                                 UserAuthService authService,
                                 UserDao userDao,
-                                UserJsonDto userJsonDto,
                                 TemplateProcessor templateProcessor,
-                                Gson gson) {
+                                Gson gson,
+                                PassEncoder passEncoder) {
         this.userDao = userDao;
-        this.userJsonDto = userJsonDto;
         this.authService = authService;
         this.templateProcessor = templateProcessor;
         this.gson = gson;
+        this.passEncoder = passEncoder;
         server = new Server(port);
     }
 
@@ -92,7 +92,7 @@ public class UsersWebServerSimple implements UsersWebServer {
         servletContextHandler.addServlet(resourceServletHolder, "/");
 
         servletContextHandler.addServlet(new ServletHolder(new IndexServlet(templateProcessor)), "/index.html");
-        servletContextHandler.addServlet(new ServletHolder(new UsersApiServlet(userJsonDto, userDao, gson)), "/api/user/");
+        servletContextHandler.addServlet(new ServletHolder(new UsersApiServlet(userDao, gson, passEncoder)), "/api/user/");
         return servletContextHandler;
     }
 }

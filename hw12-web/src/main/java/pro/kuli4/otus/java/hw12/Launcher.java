@@ -5,7 +5,6 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
@@ -14,8 +13,6 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import pro.kuli4.otus.java.hw12.dao.UserDao;
 import pro.kuli4.otus.java.hw12.dao.UserDaoHibernate;
-import pro.kuli4.otus.java.hw12.dto.UserJsonDto;
-import pro.kuli4.otus.java.hw12.dto.UserJsonDtoHibernate;
 import pro.kuli4.otus.java.hw12.entities.AddressDataSet;
 import pro.kuli4.otus.java.hw12.entities.PhoneDataSet;
 import pro.kuli4.otus.java.hw12.entities.User;
@@ -43,7 +40,41 @@ public class Launcher {
     private static final String HIBERNATE_CFG_FILE = "hibernate.cfg.xml";
 
     public static void main(String[] args) throws Exception {
-        // Initialize hibernate and DB
+        SessionFactory sessionFactory = initHibernate();
+        Gson gson = initGson();
+
+        //Create DAO, DTO and DB service
+        UserDao userDao = new UserDaoHibernate(sessionFactory);
+        DbServiceUser dbServiceUser = new DbServiceUserImpl(userDao);
+
+        //Create auxiliary services
+        TemplateProcessor templateProcessor = new TemplateProcessorImpl(TEMPLATES_DIR);
+        PassEncoder passEncoder = new UserPassEncoder();
+        UserAuthService authService = new UserAuthServiceImpl(userDao, passEncoder);
+
+        //Initialize server
+        UsersWebServer usersWebServer = new UsersWebServerSimple(
+                WEB_SERVER_PORT,
+                authService,
+                userDao,
+                templateProcessor,
+                gson,
+                passEncoder
+        );
+
+        createUser(dbServiceUser, "Sergey", "serg", passEncoder.encode("1"), "Svetlaya");
+        createUser(dbServiceUser, "Alexander", "alex", passEncoder.encode("12"), "Lenina");
+        createUser(dbServiceUser, "Pavel", "pavel", passEncoder.encode("123"), "Tverskaya");
+        createUser(dbServiceUser, "Ivan", "ivan", passEncoder.encode("1234"), "Gagarina");
+
+        //Start server
+        usersWebServer.start();
+
+        //Keep application in action
+        usersWebServer.join();
+    }
+
+    private static SessionFactory initHibernate() {
         Configuration cfg = new Configuration().configure(HIBERNATE_CFG_FILE);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
@@ -56,9 +87,10 @@ public class Launcher {
                 .getMetadataBuilder()
                 .build();
 
-        SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
+        return metadata.getSessionFactoryBuilder().build();
+    }
 
-        // Build gson
+    private static Gson initGson() {
         ExclusionStrategy strategy = new ExclusionStrategy() {
             @Override
             public boolean shouldSkipField(FieldAttributes field) {
@@ -73,41 +105,11 @@ public class Launcher {
                 return false;
             }
         };
-        Gson gson = new GsonBuilder()
+        return new GsonBuilder()
                 .serializeNulls()
                 .setPrettyPrinting()
                 .addSerializationExclusionStrategy(strategy)
                 .create();
-
-        //Create DAO, DTO and DB service
-        UserDao userDao = new UserDaoHibernate(sessionFactory);
-        UserJsonDto userJsonDto = new UserJsonDtoHibernate(sessionFactory, gson);
-        DbServiceUser dbServiceUser = new DbServiceUserImpl(userDao);
-
-        createUser(dbServiceUser, "Sergey", "serg", DigestUtils.md5Hex("1"), "Svetlaya");
-        createUser(dbServiceUser, "Alexander", "alex", DigestUtils.md5Hex("12"), "Lenina");
-        createUser(dbServiceUser, "Pavel", "pavel", DigestUtils.md5Hex("123"), "Tverskaya");
-        createUser(dbServiceUser, "Ivan", "ivan", DigestUtils.md5Hex("1234"), "Gagarina");
-
-        //Create auxiliary services
-        TemplateProcessor templateProcessor = new TemplateProcessorImpl(TEMPLATES_DIR);
-        UserAuthService authService = new UserAuthServiceImpl(userDao);
-
-        //Initialize server
-        UsersWebServer usersWebServer = new UsersWebServerSimple(
-                WEB_SERVER_PORT,
-                authService,
-                userDao,
-                userJsonDto,
-                templateProcessor,
-                gson
-        );
-
-        //Start server
-        usersWebServer.start();
-
-        //Keep application in action
-        usersWebServer.join();
     }
 
     private static void createUser(DbServiceUser dbServiceUser, String name, String login, String password, String street) {

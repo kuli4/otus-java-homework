@@ -9,6 +9,7 @@ import pro.kuli4.otus.java.hw12.entities.User;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class UserDaoHibernate implements UserDao {
@@ -74,4 +75,16 @@ public class UserDaoHibernate implements UserDao {
             throw new UserDaoException("Cannot insertOrUpdate, user = " + user,e);
         }
     }
+
+    @Override
+    public List<User> getAllUsers() {
+        try (var session = sessionFactory.openSession()) {
+            var query = session.createQuery("from User"); //#TODO Resolve N+1 problem
+            return (List<User>) query.list();
+        } catch (Exception e) {
+            throw new UserDaoException("Cannot getAllUsers" ,e);
+        }
+    }
+
+
 }

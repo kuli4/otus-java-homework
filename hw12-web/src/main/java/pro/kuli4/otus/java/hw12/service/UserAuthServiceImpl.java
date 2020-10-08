@@ -12,15 +12,17 @@ import java.util.Optional;
 public class UserAuthServiceImpl implements UserAuthService {
 
     private final UserDao userDao;
+    private final PassEncoder passEncoder;
 
-    public UserAuthServiceImpl(UserDao userDao) {
+    public UserAuthServiceImpl(UserDao userDao, PassEncoder passEncoder) {
         this.userDao = userDao;
+        this.passEncoder = passEncoder;
     }
 
     @Override
     public boolean authenticate(String login, String password) {
         Optional<User> userOptional = userDao.findByLogin(login);
         log.info("User is present: {}", userOptional.isPresent());
-        return userOptional.isPresent() && userOptional.get().getPassword().equals(DigestUtils.md5Hex(password));
+        return userOptional.isPresent() && userOptional.get().getPassword().equals(passEncoder.encode(password));
     }
 }

@@ -1,11 +1,10 @@
 package pro.kuli4.otus.java.hw12.server.servlets;
 
 import com.google.gson.Gson;
-import org.apache.commons.codec.digest.DigestUtils;
 import pro.kuli4.otus.java.hw12.dao.UserDao;
-import pro.kuli4.otus.java.hw12.dto.UserJsonDto;
 import pro.kuli4.otus.java.hw12.entities.PhoneDataSet;
 import pro.kuli4.otus.java.hw12.entities.User;
+import pro.kuli4.otus.java.hw12.service.PassEncoder;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,23 +14,21 @@ import java.io.IOException;
 
 public class UsersApiServlet extends HttpServlet {
 
-    private static final int ID_PATH_PARAM_POSITION = 1;
-
-    private final UserJsonDto userJsonDto;
     private final UserDao userDao;
     private final Gson gson;
+    private final PassEncoder passEncoder;
 
 
-    public UsersApiServlet(UserJsonDto userJsonDto, UserDao userDao, Gson gson) {
-        this.userJsonDto = userJsonDto;
+    public UsersApiServlet(UserDao userDao, Gson gson, PassEncoder passEncoder) {
         this.userDao = userDao;
         this.gson = gson;
+        this.passEncoder = passEncoder;
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
-        response.getOutputStream().print(userJsonDto.getAllUsers());
+        response.getOutputStream().print(gson.toJson(userDao.getAllUsers()));
     }
 
     @Override
@@ -41,7 +38,7 @@ public class UsersApiServlet extends HttpServlet {
             for (PhoneDataSet phoneDataSet : user.getPhones()) {
                 phoneDataSet.setUser(user);
             }
-            user.setPassword(DigestUtils.md5Hex(user.getPassword()));
+            user.setPassword(passEncoder.encode(user.getPassword()));
             try {
                 userDao.insertUser(user);
             } catch (Exception e) {
