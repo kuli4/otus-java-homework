@@ -22,7 +22,7 @@ public class UserAuthServiceImpl implements UserAuthService {
     @Override
     public boolean authenticate(String login, String password) {
         Optional<User> userOptional = userDao.findByLogin(login);
-        log.info("User is present: {}", userOptional.isPresent());
+        log.debug("User is present: {}", userOptional.isPresent());
         return userOptional.isPresent() && userOptional.get().getPassword().equals(passEncoder.encode(password));
     }
 }
