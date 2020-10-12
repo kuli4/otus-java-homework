@@ -28,7 +28,7 @@ dependencies {
     implementation("org.thymeleaf:thymeleaf-spring5")
 
     providedCompile("javax.servlet:javax.servlet-api")
-
+    providedCompile("javax.annotation:javax.annotation-api")
 }
 
 compileJava.options.encoding = 'UTF-8'

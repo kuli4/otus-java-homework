@@ -5,14 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import pro.kuli4.otus.java.hw14.entities.User;
 
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Component
+@Repository
 public class UserDaoHibernate implements UserDao {
 
     private final SessionFactory sessionFactory;
@@ -24,7 +24,7 @@ public class UserDaoHibernate implements UserDao {
 
     @Override
     public Optional<User> findById(long id) {
-        try(Session session = sessionFactory.openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             return Optional.ofNullable(session.find(User.class, id));
         } catch (Exception e) {
             throw new UserDaoException("Cannot findById, id = " + id, e);
@@ -35,7 +35,7 @@ public class UserDaoHibernate implements UserDao {
     public Optional<User> findByLogin(String login) {
         try (var session = sessionFactory.openSession()) {
             var query = session.createQuery("from User where login = :login");
-            query.setParameter("login",login);
+            query.setParameter("login", login);
             User user = (User) query.getSingleResult();
             return Optional.ofNullable(user);
         } catch (Exception e) {
@@ -51,7 +51,7 @@ public class UserDaoHibernate implements UserDao {
             tx.commit();
             return user.getId();
         } catch (Exception e) {
-            throw new UserDaoException("Cannot insertUser, user = " + user,e);
+            throw new UserDaoException("Cannot insertUser, user = " + user, e);
         }
     }
 
@@ -62,7 +62,7 @@ public class UserDaoHibernate implements UserDao {
             session.merge(user);
             tx.commit();
         } catch (Exception e) {
-            throw new UserDaoException("Cannot updateUser, user = " + user,e);
+            throw new UserDaoException("Cannot updateUser, user = " + user, e);
         }
     }
 
@@ -73,7 +73,7 @@ public class UserDaoHibernate implements UserDao {
             session.saveOrUpdate(user);
             tx.commit();
         } catch (Exception e) {
-            throw new UserDaoException("Cannot insertOrUpdate, user = " + user,e);
+            throw new UserDaoException("Cannot insertOrUpdate, user = " + user, e);
         }
     }
 
@@ -83,7 +83,7 @@ public class UserDaoHibernate implements UserDao {
             var query = session.createQuery("from User"); //#TODO Resolve N+1 problem
             return (List<User>) query.list();
         } catch (Exception e) {
-            throw new UserDaoException("Cannot getAllUsers" ,e);
+            throw new UserDaoException("Cannot getAllUsers", e);
         }
     }
 
