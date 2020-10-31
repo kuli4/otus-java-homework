@@ -23,14 +23,14 @@ public class Launcher {
     }
 
     static class Printer {
-        public boolean isFirstRight = true;
+        public String rightThread = "First";
 
         public synchronized void print(String message) throws InterruptedException {
-            while (Thread.currentThread().getName().equals("First") && !isFirstRight || Thread.currentThread().getName().equals("Second") && isFirstRight) {
+            while (!Thread.currentThread().getName().equals(rightThread)) {
                 wait();
             }
             Thread.sleep(300);
-            isFirstRight = !isFirstRight;
+            rightThread = rightThread.equals("First") ? "Second" : "First";
             log.info("{} prints {}", Thread.currentThread().getName(), message);
             notifyAll();
         }
@@ -56,7 +56,7 @@ public class Launcher {
                         printer.print(String.valueOf(i));
                     }
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
