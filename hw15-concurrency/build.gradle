@@ -1,0 +1,27 @@
+plugins {
+    id 'application'
+}
+
+version '0.0.1'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_14
+    targetCompatibility = JavaVersion.VERSION_14
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation("ch.qos.logback:logback-classic")
+}
+
+jar {
+    manifest {
+        attributes 'Main-class': 'pro.kuli4.otus.java.hw15.Launcher'
+    }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
